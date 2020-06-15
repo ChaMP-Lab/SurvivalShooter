@@ -38,6 +38,11 @@ namespace CompleteProject
 
         void Update ()
         {
+            // don't allow shooting when paused
+            if(Time.deltaTime == 0)
+            {
+                return;
+            }
             // Add the time since Update was last called to the timer.
             timer += Time.deltaTime;
 
