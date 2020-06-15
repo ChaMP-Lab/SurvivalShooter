@@ -16,7 +16,7 @@ namespace CompleteProject
         CapsuleCollider capsuleCollider;            // Reference to the capsule collider.
         EnemyManager enemyManager;                  // Reference to the enemyManager.
         difficultyControl difficultyControl;        // Reference to the difficultyControl script.
-        bool isDead;                                // Whether the enemy is dead.
+        public bool isDead;                                // Whether the enemy is dead.
         bool isSinking;                             // Whether the enemy has started sinking through the floor.
 
 
