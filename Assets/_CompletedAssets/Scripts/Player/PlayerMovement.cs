@@ -1,10 +1,17 @@
 ﻿using UnityEngine;
-//using UnitySampleAssets.CrossPlatformInput;
 
 namespace CompleteProject
 {
+    public enum PointingMode
+    {
+        Mouse,
+        Gamepad,
+    }
+
     public class PlayerMovement : MonoBehaviour
     {
+        public PointingMode pointingMode = PointingMode.Gamepad;
+
         Vector3 movement;                       // The vector to store the direction of the player's movement.
         Animator anim;                          // Reference to the animator component.
         Rigidbody playerRigidbody;              // Reference to the player's rigidbody.
@@ -14,6 +21,12 @@ namespace CompleteProject
 
         void Awake ()
         {
+            // If there are no joysticks/gamepads, set pointer mode to mouse
+            if(Input.GetJoystickNames().Length == 0)
+            {
+                pointingMode = PointingMode.Mouse;
+            }
+
             // Create a layer mask for the floor layer.
             floorMask = LayerMask.GetMask ("Floor");
 
@@ -21,6 +34,7 @@ namespace CompleteProject
             anim = GetComponent <Animator> ();
             playerRigidbody = GetComponent <Rigidbody> ();
             difficultyControl = GameObject.Find("DifficultyController").GetComponent<difficultyControl>();
+
         }
 
 
@@ -44,39 +58,58 @@ namespace CompleteProject
         void Move (float h, float v)
         {
             // Set the movement vector based on the axis input.
-            movement.Set (h, 0f, v);
+            movement.Set(h, 0f, v);
             
             // Normalise the movement vector and make it proportional to the speed per second.
             movement = movement.normalized * difficultyControl.playerSpeed * Time.deltaTime;
 
-            // Move the player to it's current position plus the movement.
-            playerRigidbody.MovePosition (transform.position + movement);
-        }
+            // Prevent player from moving beyond map center
+            Vector3 newPosition = transform.position + movement;
+            if(newPosition.z > 0){
+                newPosition.z = 0;
+            }
 
+            // Move the player to it's current position plus the movement.
+            playerRigidbody.MovePosition(newPosition);
+        }
 
         void Turning ()
         { 
-            // Create a ray from the mouse cursor on screen in the direction of the camera.
-            Ray camRay = Camera.main.ScreenPointToRay (Input.mousePosition);
-
-            // Create a RaycastHit variable to store information about what was hit by the ray.
-            RaycastHit floorHit;
-
-            // Perform the raycast and if it hits something on the floor layer...
-            if(Physics.Raycast (camRay, out floorHit, camRayLength, floorMask))
+            Vector3 lookAt;
+            if(pointingMode == PointingMode.Mouse)
             {
-                // Create a vector from the player to the point on the floor the raycast from the mouse hit.
-                Vector3 playerToMouse = floorHit.point - transform.position;
+                // Create a ray from the mouse cursor on screen in the direction of the camera.
+                Ray camRay = Camera.main.ScreenPointToRay (Input.mousePosition);
+
+                // Create a RaycastHit variable to store information about what was hit by the ray.
+                RaycastHit floorHit;
+
+                // Perform the raycast and if it hits something on the floor layer...
+                if(Physics.Raycast (camRay, out floorHit, camRayLength, floorMask))
+                {
+                    // Create a vector from the player to the point on the floor the raycast from the mouse hit.
+                    lookAt = floorHit.point - transform.position;
+                }else{
+                    return;
+                }
 
                 // Ensure the vector is entirely along the floor plane.
-                playerToMouse.y = 0f;
+                lookAt.y = 0f;
+            }else{
+                float x = Input.GetAxisRaw("Right-Stick-X");
+                float y = Input.GetAxisRaw("Right-Stick-Y");
 
-                // Create a quaternion (rotation) based on looking down the vector from the player to the mouse.
-                Quaternion newRotatation = Quaternion.LookRotation (playerToMouse);
+                lookAt = new Vector3(x, 0, -y);
 
-                // Set the player's rotation to this new rotation.
-                playerRigidbody.MoveRotation (newRotatation);
+                if(lookAt.magnitude < .7){
+                    // Fat dead-zone that allows the player to release the stick but maintain rotation
+                    return;
+                }
             }
+
+            // Create a quaternion (rotation) based on looking down the vector from the player to the mouse.
+            // Set the player's rotation to this new rotation.
+            playerRigidbody.MoveRotation(Quaternion.LookRotation(lookAt));
         }
 
 
