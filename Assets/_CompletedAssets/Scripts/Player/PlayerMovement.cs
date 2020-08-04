@@ -34,7 +34,6 @@ namespace CompleteProject
             anim = GetComponent <Animator> ();
             playerRigidbody = GetComponent <Rigidbody> ();
             difficultyControl = GameObject.Find("DifficultyController").GetComponent<difficultyControl>();
-
         }
 
 
@@ -65,9 +64,6 @@ namespace CompleteProject
 
             // Prevent player from moving beyond map center
             Vector3 newPosition = transform.position + movement;
-            if(newPosition.z > 0){
-                newPosition.z = 0;
-            }
 
             // Move the player to it's current position plus the movement.
             playerRigidbody.MovePosition(newPosition);

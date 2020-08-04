@@ -92,7 +92,7 @@ namespace CompleteProject
             gunLine.SetPosition (0, transform.position);
 
             // Set the shootRay so that it starts at the end of the gun and points forward from the barrel.
-            shootRay.origin = transform.position;
+            shootRay.origin = transform.position - (transform.forward/2); // extra negative offset prevents shooting through barrier
             shootRay.direction = transform.forward;
 
             // Perform the raycast against gameobjects on the shootable layer and if it hits something...
