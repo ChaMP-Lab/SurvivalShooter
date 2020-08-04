@@ -3292,7 +3292,13 @@ PrefabInstance:
       propertyPath: damageImage
       value: 
       objectReference: {fileID: 1394906873}
-    m_RemovedComponents: []
+    - target: {fileID: 3524698660550639678, guid: 4e5a0d387dc27394b81600988ad0216f,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 4925498795926680333, guid: 4e5a0d387dc27394b81600988ad0216f, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 4e5a0d387dc27394b81600988ad0216f, type: 3}
 --- !u!1 &1695883712
 GameObject:

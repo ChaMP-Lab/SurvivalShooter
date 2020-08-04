@@ -3,114 +3,119 @@ using UnityEngine;
 
 using XInputDotNetPure;
 
+public enum Direction
+{
+    Left, Right, Up, Down
+}
+
+public class Cue
+{
+    public Direction direction;
+    public float strength;
+
+    public Cue(Direction direction, float strength)
+    {
+        this.direction = direction;
+        this.strength = strength;
+    }
+}
+
 public class EnemySensor : MonoBehaviour
 {
-    public bool vibrationsEnabled = true;
+    public bool tactileCuesEnabled = true;
+    public bool visualCuesEnabled = true;
+    public float cueDuration = .5f;
+    public GameObject playerZoneBarrier;
 
-    private List<GameObject> nearbyEnemies = new List<GameObject>();
-    private Collider sensorCollider;
+    protected Queue<Cue> cueQueue = new Queue<Cue>();
+    protected List<GameObject> cuedEnemies = new List<GameObject>();
+
+    protected Cue currentCue;
+    protected float cueTimeRemaining;
+
+    protected CompleteProject.EnemyManager enemyManager;
 
     void Start()
     {
-        sensorCollider = GetComponentInParent<Collider>();
+        playerZoneBarrier = GameObject.Find("Barrier");
+        enemyManager = GameObject.Find("EnemyManager").GetComponent<CompleteProject.EnemyManager>();
     }
 
-    void Update()
+    public void Update()
     {
         if(Time.deltaTime == 0.0f || !enabled)
         {
             // kill vibration if paused
-            setVibration(0, 0);
+            GamePad.SetVibration(0, 0, 0);
             return;
         }
 
-        GameObject leftNearestEnemy = null;
-        GameObject rightNearestEnemy = null;
-        float leftNearestDistance = 0.0f;
-        float rightNearestDistance = 0.0f;
+        detectEnemies();
+        updateCue();
+        renderCue();
+    }
 
-        // remove dead and destroyed enemies from the list
-        nearbyEnemies.RemoveAll(enemy => isEnemyDead(enemy));
-
-        // find closest enemy on each side
-        foreach(GameObject enemy in nearbyEnemies)
+    protected void detectEnemies()
+    {
+        foreach(GameObject enemy in enemyManager.enemies)
         {
-            float distance = Vector3.Distance(enemy.transform.position, sensorCollider.transform.position);
-            if(enemy.transform.position.x < sensorCollider.transform.position.x){
-                if(distance < leftNearestDistance || leftNearestEnemy == null){
-                    leftNearestDistance = distance;
-                    leftNearestEnemy = enemy;
+            if(enemy.transform.position.z < playerZoneBarrier.transform.position.z && !cuedEnemies.Contains(enemy)){
+                Direction direction = Direction.Left;
+                if(enemy.transform.position.x > transform.position.x)
+                {
+                    direction = Direction.Right;
                 }
-            }else{
-                if(distance < rightNearestDistance || rightNearestEnemy == null){
-                    rightNearestDistance = distance;
-                    rightNearestEnemy = enemy;
+                cueQueue.Enqueue(new Cue(direction, 1.0f));
+                cuedEnemies.Add(enemy);
+                Debug.Log("Queued " + direction);
+            }
+        }
+
+    }
+
+    protected void updateCue()
+    {
+        if(currentCue != null)
+        {
+            cueTimeRemaining -= Time.deltaTime;
+            if(cueTimeRemaining <= 0)
+            {
+                Debug.Log("Cue done " + currentCue.direction);
+                currentCue = null;
+            }
+        }
+
+        if(currentCue == null && cueQueue.Count > 0)
+        {
+            currentCue = cueQueue.Dequeue();
+            cueTimeRemaining = cueDuration;
+            Debug.Log("Dequeue " + currentCue.direction);
+        }
+    }
+
+    protected void renderCue()
+    {
+        if(currentCue != null){
+            if(tactileCuesEnabled){
+                if(currentCue.direction == Direction.Left)
+                {
+                    GamePad.SetVibration(0, currentCue.strength, 0);
+                }else if(currentCue.direction == Direction.Right){
+                    GamePad.SetVibration(0, 0, currentCue.strength);
                 }
             }
 
+            if(visualCuesEnabled){
+                // @TODO: render visual cue
+            }
+        }else{
+            GamePad.SetVibration(0, 0, 0);
+            // @TODO: clear visual cue
         }
-
-        // scale vibration strength based on collider size
-        float size = sensorCollider.bounds.size.x / 2;
-
-        float leftStrength = 0.0f;
-        if(leftNearestEnemy != null)
-        {
-            leftStrength = 1.0f - leftNearestDistance / size;
-        }
-
-        float rightStrength = 0.0f;
-        if(rightNearestEnemy != null)
-        {
-            rightStrength = 1.0f - rightNearestDistance / size;
-        }
-
-
-        setVibration(leftStrength, rightStrength);
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if(isEnemy(other.gameObject))
-        {
-            nearbyEnemies.Add(other.gameObject);
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if(isEnemy(other.gameObject))
-        {
-            nearbyEnemies.Remove(other.gameObject);
-        }
-    }
-
-    private bool isEnemy(GameObject obj)
-    {
-        CompleteProject.EnemyAttack attackComponent = (CompleteProject.EnemyAttack)obj.GetComponentInChildren<CompleteProject.EnemyAttack>();
-        return attackComponent != null;
-    }
-
-    private bool isEnemyDead(GameObject obj)
-    {
-        if(!obj) return true;
-
-        CompleteProject.EnemyHealth healthComponent = (CompleteProject.EnemyHealth)obj.GetComponentInChildren<CompleteProject.EnemyHealth>();
-        return healthComponent.isDead;
     }
 
     void OnApplicationQuit()
     {
-        setVibration(0, 0);
-    }
-
-    void setVibration(float left, float right)
-    {
-        if(vibrationsEnabled)
-        {
-            GamePad.SetVibration(0, left, right);
-        } else {
-            GamePad.SetVibration(0, 0, 0);
-        }
+        GamePad.SetVibration(0, 0, 0);
     }
 }
