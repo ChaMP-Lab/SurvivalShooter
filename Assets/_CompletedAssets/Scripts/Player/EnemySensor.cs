@@ -25,6 +25,7 @@ public class EnemySensor : MonoBehaviour
     public bool tactileCuesEnabled = true;
     public bool visualCuesEnabled = true;
     public float cueDuration = .5f;
+    public float tactileCueIntensity = 1.0f;
     public GameObject playerZoneBarrier;
 
     protected Queue<Cue> cueQueue = new Queue<Cue>();
@@ -65,7 +66,7 @@ public class EnemySensor : MonoBehaviour
                 {
                     direction = Direction.Right;
                 }
-                cueQueue.Enqueue(new Cue(direction, 1.0f));
+                cueQueue.Enqueue(new Cue(direction, tactileCueIntensity));
                 cuedEnemies.Add(enemy);
                 Debug.Log("Queued " + direction);
             }
