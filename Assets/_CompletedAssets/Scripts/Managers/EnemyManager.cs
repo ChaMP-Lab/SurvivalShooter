@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace CompleteProject
 {
@@ -8,8 +9,9 @@ namespace CompleteProject
         //public GameObject enemy;              // The enemy prefab to be spawned.
         //public float spawnTime = 3f;          // How long between each spawn.
         public Transform[] spawnPoints;         // An array of spawn points the enemies can spawn from.
-        public GameObject[] enemy;              // An array of different enemy types.
-        public int enemyCount;
+        public GameObject[] enemyTypes;              // An array of different enemy types.
+
+        public List<GameObject> enemies = new List<GameObject>();
 
         difficultyControl difficultyControl;
 
@@ -24,11 +26,21 @@ namespace CompleteProject
             InvokeRepeating ("Spawn", difficultyControl.spawnTime, difficultyControl.spawnTime);
         }
 
+        void Update () {
+            for(int i=enemies.Count - 1; i > -1; i--)
+            {
+                GameObject enemy = enemies[i];
+                CompleteProject.EnemyHealth healthComponent = (CompleteProject.EnemyHealth)enemy.GetComponentInChildren<CompleteProject.EnemyHealth>();
+                if(healthComponent.isDead){
+                    enemies.RemoveAt(i);
+                }
+            }
+        }
 
         void Spawn ()
         {
             // If the player has no health left and there are fewer than 30 enemies in gameplay...
-            if(playerHealth.currentHealth <= 0f || enemyCount >= 30)
+            if(playerHealth.currentHealth <= 0f || enemies.Count >= 30)
             {
                 // ... exit the function.
                 return;
@@ -38,9 +50,10 @@ namespace CompleteProject
             int spawnPointIndex = Random.Range (0, spawnPoints.Length);
 
             // Create an instance of the enemy prefab at the randomly selected spawn point's position and rotation.
-            Instantiate (enemy[Random.Range(0,enemy.Length)], spawnPoints[spawnPointIndex].position, spawnPoints[spawnPointIndex].rotation);
+            GameObject enemy = Instantiate (enemyTypes[Random.Range(0,enemyTypes.Length)], spawnPoints[spawnPointIndex].position, spawnPoints[spawnPointIndex].rotation);
+            enemies.Add(enemy);
             // ... and increase the enemycount by 1.
-            enemyCount += 1;
         }
+
     }
 }

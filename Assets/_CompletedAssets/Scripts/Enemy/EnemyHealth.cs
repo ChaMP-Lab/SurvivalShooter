@@ -70,8 +70,6 @@ namespace CompleteProject
             {
                 // ... the enemy is dead.
                 Death ();
-                // ... and the enemy count drops by 1.
-                enemyManager.enemyCount--;
             }
         }
 
