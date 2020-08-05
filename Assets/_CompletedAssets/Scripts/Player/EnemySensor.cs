@@ -27,6 +27,7 @@ public class EnemySensor : MonoBehaviour
     public float cueDuration = .5f;
     public float tactileCueIntensity = 1.0f;
     public GameObject playerZoneBarrier;
+    public GameObject visualCueObject;
 
     protected Queue<Cue> cueQueue = new Queue<Cue>();
     protected List<GameObject> cuedEnemies = new List<GameObject>();
@@ -38,8 +39,8 @@ public class EnemySensor : MonoBehaviour
 
     void Start()
     {
-        playerZoneBarrier = GameObject.Find("Barrier");
         enemyManager = GameObject.Find("EnemyManager").GetComponent<CompleteProject.EnemyManager>();
+        visualCueObject.GetComponent<Renderer>().enabled = false;
     }
 
     public void Update()
@@ -106,12 +107,21 @@ public class EnemySensor : MonoBehaviour
                 }
             }
 
-            if(visualCuesEnabled){
-                // @TODO: render visual cue
+            if(visualCuesEnabled && visualCueObject != null){
+                visualCueObject.GetComponent<Renderer>().enabled = true;
+
+                Vector3 currentScale = visualCueObject.transform.localScale;
+                if(currentCue.direction == Direction.Left)
+                {
+                    currentScale.x = -Mathf.Abs(currentScale.x);
+                }else if(currentCue.direction == Direction.Right){
+                    currentScale.x = Mathf.Abs(currentScale.x);
+                }
+                visualCueObject.transform.localScale = currentScale;
             }
         }else{
             GamePad.SetVibration(0, 0, 0);
-            // @TODO: clear visual cue
+            visualCueObject.GetComponent<Renderer>().enabled = false;
         }
     }
 
