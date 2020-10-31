@@ -1,10 +1,12 @@
 ﻿using UnityEngine;
-using UnitySampleAssets.CrossPlatformInput;
+using UnityEngine.InputSystem;
 
 namespace CompleteProject
 {
     public class PlayerShooting : MonoBehaviour
     {
+        private InputActions inputActions;
+
         public int damagePerShot = 20;                  // The damage inflicted by each bullet.
         public float timeBetweenBullets = 0.15f;        // The time between each shot.
         public float range = 100f;                      // The distance the gun can fire.
@@ -18,23 +20,34 @@ namespace CompleteProject
         LineRenderer gunLine;                           // Reference to the line renderer.
         AudioSource gunAudio;                           // Reference to the audio source.
         Light gunLight;                                 // Reference to the light component.
-		public Light faceLight;								// Duh
+        public Light faceLight;								// Duh
         float effectsDisplayTime = 0.2f;                // The proportion of the timeBetweenBullets that the effects will display for.
 
 
         void Awake ()
         {
+            inputActions = new InputActions();
+
             // Create a layer mask for the Shootable layer.
-            shootableMask = LayerMask.GetMask ("Shootable");
+            shootableMask = LayerMask.GetMask("Shootable");
 
             // Set up the references.
             gunParticles = GetComponent<ParticleSystem> ();
             gunLine = GetComponent <LineRenderer> ();
             gunAudio = GetComponent<AudioSource> ();
             gunLight = GetComponent<Light> ();
-			//faceLight = GetComponentInChildren<Light> ();
+            //faceLight = GetComponentInChildren<Light> ();
         }
 
+        void OnEnable()
+        {
+            inputActions.Enable();
+        }
+
+        void OnDisable()
+        {
+            inputActions.Disable();
+        }
 
         void Update ()
         {
@@ -47,7 +60,7 @@ namespace CompleteProject
             timer += Time.deltaTime;
 
             // If the Fire1 button is being press and it's time to fire...
-			if(Input.GetButton ("Fire1") && timer >= timeBetweenBullets)
+            if(inputActions.Player.Shoot.phase == InputActionPhase.Started && timer >= timeBetweenBullets)
             {
                 // ... shoot the gun.
                 Shoot ();
@@ -81,7 +94,7 @@ namespace CompleteProject
 
             // Enable the lights.
             gunLight.enabled = true;
-			//faceLight.enabled = true;
+            //faceLight.enabled = true;
 
             // Stop the particles from playing if they were, then start the particles.
             gunParticles.Stop ();

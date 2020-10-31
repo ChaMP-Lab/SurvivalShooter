@@ -7,52 +7,63 @@ using UnityEditor;
 #endif
 
 public class PauseManager : MonoBehaviour {
-	
+
+	private InputActions inputActions;
+
 	public AudioMixerSnapshot paused;
 	public AudioMixerSnapshot unpaused;
-	
+
 	Canvas canvas;
-	
+	CanvasGroup canvasGroup;
+
+	void Awake()
+	{
+		inputActions = new InputActions();
+		inputActions.Player.Pause.performed += context => Pause();
+	}
+
+	void OnEnable()
+	{
+		inputActions.Enable();
+	}
+
+	void OnDisable()
+	{
+		inputActions.Disable();
+	}
+
 	void Start()
 	{
 		canvas = GetComponent<Canvas>();
+		canvasGroup = GetComponent<CanvasGroup>();
 	}
-	
-	void Update()
-	{
-		if (Input.GetKeyDown(KeyCode.Escape))
-		{
-			canvas.enabled = !canvas.enabled;
-			Pause();
-		}
-	}
-	
+
 	public void Pause()
 	{
-		Time.timeScale = Time.timeScale == 0 ? 1 : 0;
+		canvas.enabled = !canvas.enabled;
+		canvasGroup.interactable = canvas.enabled;
+
+		Time.timeScale = 1 - Time.timeScale;
 		Lowpass ();
-		
 	}
-	
+
 	void Lowpass()
 	{
 		if (Time.timeScale == 0)
 		{
 			paused.TransitionTo(.01f);
 		}
-		
 		else
-			
 		{
 			unpaused.TransitionTo(.01f);
 		}
 	}
-	
+
 	public void Quit()
 	{
-		#if UNITY_EDITOR 
+		#if UNITY_EDITOR
 		EditorApplication.isPlaying = false;
-		#else 
+		#else
 		Application.Quit();
 		#endif
 	}

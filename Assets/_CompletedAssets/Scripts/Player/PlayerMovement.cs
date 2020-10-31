@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace CompleteProject
 {
@@ -10,6 +11,8 @@ namespace CompleteProject
 
     public class PlayerMovement : MonoBehaviour
     {
+        private InputActions inputActions;
+
         public PointingMode pointingMode = PointingMode.Gamepad;
 
         Vector3 movement;                       // The vector to store the direction of the player's movement.
@@ -21,8 +24,9 @@ namespace CompleteProject
 
         void Awake ()
         {
+            inputActions = new InputActions();
             // If there are no joysticks/gamepads, set pointer mode to mouse
-            if(Input.GetJoystickNames().Length == 0)
+            if(Gamepad.current == null)
             {
                 pointingMode = PointingMode.Mouse;
             }
@@ -37,15 +41,25 @@ namespace CompleteProject
 
         }
 
+        void OnEnable ()
+        {
+            inputActions.Enable();
+        }
+
+        void OnDisable ()
+        {
+            inputActions.Disable();
+        }
 
         void FixedUpdate ()
         {
             // Store the input axes.
-            float h = Input.GetAxisRaw("Horizontal");
-            float v = Input.GetAxisRaw("Vertical");
+            Vector2 inputPosition = inputActions.Player.Move.ReadValue<Vector2>();
+            float h = inputPosition.x;
+            float v = inputPosition.y;
 
             // Move the player around the scene.
-            Move (h, v);
+            Move(h, v);
 
             // Turn the player to face the mouse cursor.
             Turning ();
@@ -54,32 +68,28 @@ namespace CompleteProject
             Animating (h, v);
         }
 
-
         void Move (float h, float v)
         {
             // Set the movement vector based on the axis input.
             movement.Set(h, 0f, v);
-            
+
             // Normalise the movement vector and make it proportional to the speed per second.
             movement = movement.normalized * difficultyControl.playerSpeed * Time.deltaTime;
 
-            // Prevent player from moving beyond map center
             Vector3 newPosition = transform.position + movement;
-            if(newPosition.z > 0){
-                newPosition.z = 0;
-            }
 
             // Move the player to it's current position plus the movement.
-            playerRigidbody.MovePosition(newPosition);
+            playerRigidbody.MovePosition(transform.position + movement);
         }
 
         void Turning ()
-        { 
+        {
             Vector3 lookAt;
             if(pointingMode == PointingMode.Mouse)
             {
                 // Create a ray from the mouse cursor on screen in the direction of the camera.
-                Ray camRay = Camera.main.ScreenPointToRay (Input.mousePosition);
+                Vector2 inputPosition = inputActions.Player.MouseAim.ReadValue<Vector2>();
+                Ray camRay = Camera.main.ScreenPointToRay (inputPosition);
 
                 // Create a RaycastHit variable to store information about what was hit by the ray.
                 RaycastHit floorHit;
@@ -96,13 +106,11 @@ namespace CompleteProject
                 // Ensure the vector is entirely along the floor plane.
                 lookAt.y = 0f;
             }else{
-                float x = Input.GetAxisRaw("Right-Stick-X");
-                float y = Input.GetAxisRaw("Right-Stick-Y");
-
-                lookAt = new Vector3(x, 0, -y);
+                Vector2 inputPosition = inputActions.Player.Aim.ReadValue<Vector2>();
+                lookAt = new Vector3(inputPosition.x, 0, inputPosition.y);
 
                 if(lookAt.magnitude < .7){
-                    // Fat dead-zone that allows the player to release the stick but maintain rotation
+                    // Fat ignore-zone that allows the player to release the stick but maintain rotation
                     return;
                 }
             }
@@ -111,7 +119,6 @@ namespace CompleteProject
             // Set the player's rotation to this new rotation.
             playerRigidbody.MoveRotation(Quaternion.LookRotation(lookAt));
         }
-
 
         void Animating (float h, float v)
         {
