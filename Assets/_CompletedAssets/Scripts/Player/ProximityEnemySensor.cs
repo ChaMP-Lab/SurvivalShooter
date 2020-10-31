@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
-
-using XInputDotNetPure;
+using UnityEngine.InputSystem;
 
 public class ProximityEnemySensor : MonoBehaviour
 {
@@ -17,7 +16,7 @@ public class ProximityEnemySensor : MonoBehaviour
     {
         if(Time.deltaTime == 0.0f || !enabled)
         {
-            setVibration(0, 0);
+            SetVibration(0, 0);
             return;
         }
 
@@ -63,7 +62,7 @@ public class ProximityEnemySensor : MonoBehaviour
         }
 
 
-        setVibration(leftStrength, rightStrength);
+        SetVibration(leftStrength, rightStrength);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -98,11 +97,15 @@ public class ProximityEnemySensor : MonoBehaviour
 
     void OnApplicationQuit()
     {
-        setVibration(0, 0);
+        SetVibration(0, 0);
     }
 
-    void setVibration(float left, float right)
+    void SetVibration(float left, float right)
     {
-        GamePad.SetVibration(0, left, right);
+        Gamepad gamepad = Gamepad.current;
+        if(gamepad != null)
+        {
+            gamepad.SetMotorSpeeds(left, right);
+        }
     }
 }

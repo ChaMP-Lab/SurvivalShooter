@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-
-using XInputDotNetPure;
+using UnityEngine.InputSystem;
 
 public enum Direction
 {
@@ -48,7 +47,7 @@ public class EnemySensor : MonoBehaviour
         if(Time.deltaTime == 0.0f || !enabled)
         {
             // kill vibration if paused
-            GamePad.SetVibration(0, 0, 0);
+            SetVibration(0, 0);
             return;
         }
 
@@ -101,9 +100,9 @@ public class EnemySensor : MonoBehaviour
             if(tactileCuesEnabled){
                 if(currentCue.direction == Direction.Left)
                 {
-                    GamePad.SetVibration(0, currentCue.strength, 0);
+                    SetVibration(currentCue.strength, 0);
                 }else if(currentCue.direction == Direction.Right){
-                    GamePad.SetVibration(0, 0, currentCue.strength);
+                    SetVibration(0, currentCue.strength);
                 }
             }
 
@@ -120,13 +119,22 @@ public class EnemySensor : MonoBehaviour
                 visualCueObject.transform.localScale = currentScale;
             }
         }else{
-            GamePad.SetVibration(0, 0, 0);
+            SetVibration(0, 0);
             visualCueObject.GetComponent<Renderer>().enabled = false;
         }
     }
 
     void OnApplicationQuit()
     {
-        GamePad.SetVibration(0, 0, 0);
+        SetVibration(0, 0);
+    }
+
+    void SetVibration(float left, float right)
+    {
+        Gamepad gamepad = Gamepad.current;
+        if(gamepad != null)
+        {
+            gamepad.SetMotorSpeeds(left, right);
+        }
     }
 }
