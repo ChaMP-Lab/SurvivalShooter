@@ -23,6 +23,8 @@ public class EnemySensor : MonoBehaviour
 {
     public bool tactileCuesEnabled = true;
     public bool visualCuesEnabled = true;
+    public bool auditoryCuesEnabled = true;
+
     public float cueDuration = .5f;
     public float tactileCueIntensity = 1.0f;
     public GameObject playerZoneBarrier;
@@ -30,9 +32,12 @@ public class EnemySensor : MonoBehaviour
 
     protected Queue<Cue> cueQueue = new Queue<Cue>();
     protected List<GameObject> cuedEnemies = new List<GameObject>();
+    AudioSource audioSource;
+
 
     protected Cue currentCue;
     protected float cueTimeRemaining;
+    protected bool newCue = false;
 
     protected CompleteProject.EnemyManager enemyManager;
 
@@ -40,6 +45,24 @@ public class EnemySensor : MonoBehaviour
     {
         enemyManager = GameObject.Find("EnemyManager").GetComponent<CompleteProject.EnemyManager>();
         visualCueObject.GetComponent<Renderer>().enabled = false;
+
+        // Resample audio to make duration match `cueDuration` setting
+        // audio source probably needs to be mono
+        audioSource = GetComponent<AudioSource>();
+        audioSource.clip.LoadAudioData();
+
+        float[] samples = new float[audioSource.clip.samples];
+        float sampleRate = audioSource.clip.samples / audioSource.clip.length;
+        float[] stretchedSamples = new float[(int)(cueDuration * sampleRate)];
+        audioSource.clip.GetData(samples, 0);
+
+        for (int i=0; i<stretchedSamples.Length; i++)
+        {
+            int sampleIdx = (int)(((float)i/stretchedSamples.Length) * samples.Length);
+            stretchedSamples[i] = samples[sampleIdx];
+        }
+
+        audioSource.clip.SetData(stretchedSamples, 0);
     }
 
     public void Update()
@@ -71,7 +94,6 @@ public class EnemySensor : MonoBehaviour
                 Debug.Log("Queued " + direction);
             }
         }
-
     }
 
     protected void updateCue()
@@ -91,32 +113,46 @@ public class EnemySensor : MonoBehaviour
             currentCue = cueQueue.Dequeue();
             cueTimeRemaining = cueDuration;
             Debug.Log("Dequeue " + currentCue.direction);
+            newCue = true;
         }
     }
 
     protected void renderCue()
     {
-        if(currentCue != null){
-            if(tactileCuesEnabled){
-                if(currentCue.direction == Direction.Left)
+        if(currentCue != null)
+        {
+            if(newCue)
+            {
+                newCue = false;
+                if(auditoryCuesEnabled)
                 {
-                    SetVibration(currentCue.strength, 0);
-                }else if(currentCue.direction == Direction.Right){
-                    SetVibration(0, currentCue.strength);
+                    audioSource.panStereo = (currentCue.direction == Direction.Left) ? -1 : 1;
+                    audioSource.Play();
                 }
-            }
 
-            if(visualCuesEnabled && visualCueObject != null){
-                visualCueObject.GetComponent<Renderer>().enabled = true;
-
-                Vector3 currentScale = visualCueObject.transform.localScale;
-                if(currentCue.direction == Direction.Left)
+                if(tactileCuesEnabled)
                 {
-                    currentScale.x = -Mathf.Abs(currentScale.x);
-                }else if(currentCue.direction == Direction.Right){
-                    currentScale.x = Mathf.Abs(currentScale.x);
+                    if(currentCue.direction == Direction.Left)
+                    {
+                        SetVibration(currentCue.strength, 0);
+                    }else if(currentCue.direction == Direction.Right){
+                        SetVibration(0, currentCue.strength);
+                    }
                 }
-                visualCueObject.transform.localScale = currentScale;
+
+                if(visualCuesEnabled && visualCueObject != null)
+                {
+                    visualCueObject.GetComponent<Renderer>().enabled = true;
+
+                    Vector3 currentScale = visualCueObject.transform.localScale;
+                    if(currentCue.direction == Direction.Left)
+                    {
+                        currentScale.x = -Mathf.Abs(currentScale.x);
+                    }else if(currentCue.direction == Direction.Right){
+                        currentScale.x = Mathf.Abs(currentScale.x);
+                    }
+                    visualCueObject.transform.localScale = currentScale;
+                }
             }
         }else{
             SetVibration(0, 0);
