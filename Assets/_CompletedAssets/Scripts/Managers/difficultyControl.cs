@@ -16,12 +16,17 @@ public class difficultyControl : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+      SetDifficulty();
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
+    }
+
+    void SetDifficulty(){
+      enemyStartingHealth = (int) SetConditions.difficultyArray[SetConditions.level];
+      Debug.Log("New difficulty: " + enemyStartingHealth);
     }
 }

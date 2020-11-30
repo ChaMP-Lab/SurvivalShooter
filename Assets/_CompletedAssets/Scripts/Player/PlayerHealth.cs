@@ -14,7 +14,7 @@ namespace CompleteProject
         public AudioClip deathClip;                                 // The audio clip to play when the player dies.
         public float flashSpeed = 5f;                               // The speed the damageImage will fade at.
         public Color flashColour = new Color(1f, 0f, 0f, 0.1f);     // The colour the damageImage is set to, to flash.
-
+        public GameObject[] heartArray;
 
         Animator anim;                                              // Reference to the Animator component.
         AudioSource playerAudio;                                    // Reference to the AudioSource component.
@@ -34,6 +34,21 @@ namespace CompleteProject
 
             // Set the initial health of the player.
             currentHealth = startingHealth;
+
+            // Set the lives GUI.
+            Debug.Log("StartOfLevel Lives: " + SetConditions.playerLives);
+            switch(SetConditions.playerLives){
+              case 2:
+              //Do stuff
+              heartArray[2].SetActive(false);
+              break;
+
+              case 1:
+              //Do stuff
+              heartArray[2].SetActive(false);
+              heartArray[1].SetActive(false);
+              break;
+            }
         }
 
 
@@ -75,6 +90,8 @@ namespace CompleteProject
             if(currentHealth <= 0 && !isDead)
             {
                 // ... it should die.
+                SetConditions.playerLives -= 1;
+                Debug.Log("AfterDeath Lives: " + SetConditions.playerLives);
                 Death ();
             }
         }
