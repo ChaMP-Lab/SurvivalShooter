@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using System;
+using CompleteProject;
 
 public class SetConditions : MonoBehaviour{
 
@@ -18,11 +19,14 @@ public static string fileName;
 public static int totalLevels = 20; // set to 3 for testing; will be higher for actual...
 public static float currentTime;
 public static int level = 0;
+public static int cueIndex = 0;
+public static int playerLives = 3;
 
 //public static string cueCondition;
 
 public static List<float> difficultyArray = new List<float>();
 public static List<string> cueCondition = new List<string>();
+public static string audioCondition;
 
 //-----------------------------//
 // Updating Gameplay Variables //
@@ -124,7 +128,8 @@ public static List<string> cueCondition = new List<string>();
           cueCondition.Add("both");
           cueCondition.Add("visual");
         }
-
+        audioCondition = "noAudio";
+        Debug.Log (audioCondition);
         setDifficulty ();
         SceneManager.LoadScene (1, LoadSceneMode.Single);
       }
@@ -159,6 +164,8 @@ public static List<string> cueCondition = new List<string>();
           cueCondition.Add("visual");
         }
 
+        audioCondition = "Audio";
+        Debug.Log (audioCondition);
         setDifficulty ();
         SceneManager.LoadScene (1, LoadSceneMode.Single);
       }
