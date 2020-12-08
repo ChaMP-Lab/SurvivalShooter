@@ -1,10 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class difficultyControl : MonoBehaviour
 {
     //Difficulty parameters (default values)
+    public Text cueText;
     public float spawnTime = 3f;            // The amount of time that ellapses between enemy spawns (3f).
     public int enemyStartingHealth = 100;   // Enemy characters' starting health (100).
     public int enemyAttackDamage = 10;      // The amount of health taken away per enemy attack (10).
@@ -17,6 +19,7 @@ public class difficultyControl : MonoBehaviour
     void Start()
     {
       SetDifficulty();
+      startScreen();
     }
 
     // Update is called once per frame
@@ -28,5 +31,9 @@ public class difficultyControl : MonoBehaviour
     void SetDifficulty(){
       enemyStartingHealth = (int) SetConditions.difficultyArray[SetConditions.level];
       Debug.Log("New difficulty: " + enemyStartingHealth);
+    }
+
+    void startScreen(){
+      cueText.color = new Color (1, 1, 1, 1);
     }
 }
