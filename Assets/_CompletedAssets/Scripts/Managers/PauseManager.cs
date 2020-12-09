@@ -36,6 +36,9 @@ public class PauseManager : MonoBehaviour {
 	{
 		canvas = GetComponent<Canvas>();
 		canvasGroup = GetComponent<CanvasGroup>();
+
+		// Start each level paused
+		Pause();
 	}
 
 	public void Pause()
