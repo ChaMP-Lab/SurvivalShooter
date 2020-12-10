@@ -96,6 +96,7 @@ public static string audioCondition;
   	public void setSSN(){
   		SSN = int.Parse(SSNtext.text);
   		fileName = "data/" + SSNtext.text + ".txt";
+      System.IO.Directory.CreateDirectory("data");
   		System.IO.File.WriteAllText(fileName, "VARIABLES:, SSN, cueCondition, currentTime, totalLevels, TimeInTrial, ETC..." + System.Environment.NewLine);
   		System.IO.File.AppendAllText(fileName, "START:," + SSN + "," + cueCondition + "," + currentTime + totalLevels + ", TOT" + ", ETC" + System.Environment.NewLine);
   	}
