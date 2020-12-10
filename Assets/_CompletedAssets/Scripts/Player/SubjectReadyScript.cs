@@ -7,6 +7,7 @@ using UnityEngine.EventSystems;
 public class SubjectReadyScript : MonoBehaviour
 {
     public Button readyButton;
+    public PauseManager pauseManager;
 
     void Start()
     {
@@ -18,6 +19,10 @@ public class SubjectReadyScript : MonoBehaviour
 
             StartCoroutine(EnableButtonAfterDelay(3.0f));
         }
+        if(pauseManager)
+        {
+            pauseManager.enabled = false;
+        }
 
         // start the game paused
         Time.timeScale = 0;
@@ -27,6 +32,10 @@ public class SubjectReadyScript : MonoBehaviour
     {
         GetComponent<Canvas>().gameObject.SetActive(false);
         Time.timeScale = 1;
+        if(pauseManager)
+        {
+            pauseManager.enabled = true;
+        }
     }
 
     void SetButtonAlpha(float alpha)
