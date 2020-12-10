@@ -287,29 +287,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 23275298}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 244922611}
-        m_MethodName: Pause
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1852007293}
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &23275298
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -686,8 +664,8 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 244922606}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -95.30078}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 1979757894}
@@ -696,7 +674,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -821.51685, y: -450.85373}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
 --- !u!225 &244922608
@@ -3038,6 +3016,7 @@ GameObject:
   - component: {fileID: 1120841647}
   - component: {fileID: 1120841649}
   - component: {fileID: 1120841648}
+  - component: {fileID: 1120841650}
   m_Layer: 5
   m_Name: InstructionsCanvas
   m_TagString: Untagged
@@ -3103,6 +3082,19 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 1
   m_TargetDisplay: 0
+--- !u!114 &1120841650
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1120841646}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 49fcb9a70c336addf86ead36acc5bd84, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  readyButton: {fileID: 23275297}
 --- !u!1 &1125301618
 GameObject:
   m_ObjectHideFlags: 0
@@ -4071,7 +4063,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1205216736}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.5
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -5844,7 +5836,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: I'm Ready!
+  m_Text: "\u24B6  I'm Ready!"
 --- !u!222 &1978305463
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -5998,7 +5990,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -336.49997}
+  m_AnchoredPosition: {x: 0, y: -241.49997}
   m_SizeDelta: {x: -40, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2014374969
@@ -6049,22 +6041,8 @@ MonoBehaviour:
     voluptas necessitatibus.
 
 
-    Iure error quisquam et. Repudiandae sunt reprehenderit
-    maiores sed temporibus vel ut velit. Accusantium ut illum aut nemo et cumque.
 
-
-    Sapiente
-    dicta officia dignissimos aut officiis. Optio deserunt perspiciatis minus assumenda
-    quidem. Dolore aspernatur qui voluptatem ea maiores consequatur. Quis perspiciatis
-    debitis qui odio qui natus cumque. Blanditiis ut exercitationem molestiae. Explicabo
-    expedita repellat praesentium doloremque.
-
-
-    Inventore quo est nobis corporis
-    necessitatibus eveniet in. Quos delectus maxime non est voluptates est assumenda
-    voluptatem. Amet a reprehenderit vel recusandae cumque sit est.
-
-'
+    Press ''A'' when you''re ready to begin!'
 --- !u!222 &2014374970
 CanvasRenderer:
   m_ObjectHideFlags: 0
