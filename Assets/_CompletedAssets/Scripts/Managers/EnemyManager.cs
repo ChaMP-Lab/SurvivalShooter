@@ -55,5 +55,14 @@ namespace CompleteProject
             // ... and increase the enemycount by 1.
         }
 
+        public void DestroyAllEnemies()
+        {
+            foreach(GameObject enemy in enemies)
+            {
+                Destroy(enemy);
+            }
+            enemies.Clear();
+        }
+
     }
 }

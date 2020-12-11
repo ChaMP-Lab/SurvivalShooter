@@ -15,18 +15,7 @@ public class LoadScene : MonoBehaviour
   public UnityEvent TimeOverEvent = new UnityEvent();
 
   protected float TimeInLevel;
-
-
-
-  IEnumerator LoadScreen(){
-    yield return new WaitForSeconds(3);
-    if (SetConditions.playerLives == 0){
-      SetConditions.playerLives = 3;
-      SetConditions.level += 1;
-      SceneManager.LoadScene(1);
-    }
-    SceneManager.LoadScene(1);
-  }
+  protected Coroutine levelTimerRoutine;
 
   IEnumerator LevelTimer(){
     Debug.Log("StartTime: " + TimeInLevel);
@@ -58,19 +47,13 @@ public class LoadScene : MonoBehaviour
     Debug.Log(SetConditions.cueCondition[SetConditions.cueIndex]);
     Debug.Log(SetConditions.audioCondition);
     SetCues(SetConditions.cueCondition[SetConditions.cueIndex], SetConditions.audioCondition);
-    switch (SceneManager.GetActiveScene().buildIndex){
-      case 2:
-      StartCoroutine("LoadScreen");
-      break;
 
-      case 1:
-      StartCoroutine("LevelTimer");
-      break;
-    }
+    StartLevelTimer();
   }
 
   public void SetCues (string cueCondition, string audioCondition){
     EnemySensor enemySensorComponent = EnemySensor.GetComponent<EnemySensor>();
+
     switch (cueCondition){
       case "tactile":
         enemySensorComponent.tactileCuesEnabled = true;
@@ -111,5 +94,15 @@ public class LoadScene : MonoBehaviour
   public float GetTimeRemaining()
   {
     return LevelDuration - TimeInLevel;
+  }
+
+  public void PauseLevelTimer()
+  {
+    StopCoroutine(levelTimerRoutine);
+  }
+
+  public void StartLevelTimer()
+  {
+    levelTimerRoutine = StartCoroutine("LevelTimer");
   }
 }

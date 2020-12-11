@@ -4,127 +4,166 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class LevelTransitionManager : MonoBehaviour
+namespace CompleteProject
 {
-    public Canvas levelStartCanvas;
-    public Canvas levelFinishCanvas;
-    public Canvas screenFadeCanvas;
 
-    public PauseManager pauseManager;
-    public LoadScene loadSceneObject;
-
-    void Start()
+    public class LevelTransitionManager : MonoBehaviour
     {
-        if(levelStartCanvas)
+        public Animator animator;
+
+        public Canvas levelStartCanvas;
+        public Canvas levelFinishCanvas;
+        public Canvas screenFadeCanvas;
+
+        public PauseManager pauseManager;
+        public LoadScene loadSceneObject;
+        public PlayerHealth playerHealth;
+        public EnemyManager enemyManager;
+
+        public Text livesLeftText;
+
+        protected Vector3 initialPosition;
+        protected Quaternion initialRotation;
+
+        void Start()
         {
+            initialPosition = playerHealth.gameObject.transform.position;
+            initialRotation = playerHealth.gameObject.transform.rotation;
+
             Button readyButton = levelStartCanvas.GetComponentInChildren<Button>();
             if(readyButton)
             {
                 readyButton.onClick.AddListener(PlayerIsReadyToStart);
                 StartCoroutine(EnableButtonAfterDelay(3.0f, readyButton));
             }
-        }
-
-        if(pauseManager)
-        {
             pauseManager.enabled = false;
-        }
 
-        // start the game paused
-        Time.timeScale = 0;
+            // start the game paused
+            Time.timeScale = 0;
 
-        if(loadSceneObject)
-        {
             loadSceneObject.TimeOverEvent.AddListener(OnTimeOver);
-        }
+            playerHealth.outOfHealthEvent.AddListener(OnPlayerDied);
 
-        if(levelFinishCanvas)
-        {
             levelFinishCanvas.gameObject.SetActive(false);
+
+            FadeIn();
         }
 
-        FadeIn();
-    }
-
-    void PlayerIsReadyToStart()
-    {
-        StartCoroutine(FadeEffect.FadeCanvas(levelStartCanvas.gameObject, 1.0f, 0.0f, 0.125f, BeginPlay));
-    }
-
-    void BeginPlay(){
-        if(pauseManager)
+        void OnPlayerDied()
         {
-            Debug.Log("Pause manager re-enabled");
-            pauseManager.enabled = true;
-        }
-        levelStartCanvas.gameObject.SetActive(false);
-        Time.timeScale = 1;
-    }
+            livesLeftText.text = "" + (--SetConditions.playerLives);
 
-    void OnTimeOver()
-    {
-        if(pauseManager)
+            loadSceneObject.PauseLevelTimer();
+            StartCoroutine(WaitForDeathAnimations());
+        }
+
+        void Update()
         {
-            pauseManager.enabled = false;
+            animator.SetInteger("Health", playerHealth.currentHealth);
+            animator.SetInteger("Lives", SetConditions.playerLives);
         }
-        Time.timeScale = 0;
-        StartCoroutine(FadeEffect.FadeCanvas(levelFinishCanvas.gameObject, 0.0f, 1.0f, 1.0f));
 
-        levelFinishCanvas.gameObject.SetActive(true);
-        Button readyButton = levelFinishCanvas.GetComponentInChildren<Button>();
-        if(readyButton)
+        void PlayerIsReadyToStart()
         {
-            readyButton.onClick.AddListener(PlayerIsReadyForNextLevel);
-            StartCoroutine(EnableButtonAfterDelay(2.0f, readyButton));
+            StartCoroutine(FadeEffect.FadeCanvas(levelStartCanvas.gameObject, 1.0f, 0.0f, 0.125f, BeginPlay));
         }
-    }
 
-    void PlayerIsReadyForNextLevel()
-    {
-        FadeOut(loadSceneObject.GotoNextLevel);
-    }
-
-    void RemoveScreenFadeCanvas()
-    {
-        if(screenFadeCanvas){
-            screenFadeCanvas.gameObject.SetActive(false);
+        void BeginPlay(){
+            if(pauseManager)
+            {
+                pauseManager.enabled = true;
+            }
+            levelStartCanvas.gameObject.SetActive(false);
+            Time.timeScale = 1;
         }
-    }
 
-    void FadeIn()
-    {
-        if(screenFadeCanvas){
-            screenFadeCanvas.gameObject.SetActive(true);
-            StartCoroutine(FadeEffect.FadeCanvas(screenFadeCanvas.gameObject, 1.0f, 0.0f, 1.0f, RemoveScreenFadeCanvas));
-        }else{
-            RemoveScreenFadeCanvas();
-        }
-    }
+        void OnTimeOver()
+        {
+            if(pauseManager)
+            {
+                pauseManager.enabled = false;
+            }
+            Time.timeScale = 0;
+            StartCoroutine(FadeEffect.FadeCanvas(levelFinishCanvas.gameObject, 0.0f, 1.0f, 1.0f));
 
-    void FadeOut(FadeEffect.FadeFinished Then = null)
-    {
-        if(screenFadeCanvas){
-            screenFadeCanvas.gameObject.SetActive(true);
-            StartCoroutine(FadeEffect.FadeCanvas(screenFadeCanvas.gameObject, 0.0f, 1.0f, 1.0f, Then));
-        }else{
-            if(Then != null){
-                Then();
+            levelFinishCanvas.gameObject.SetActive(true);
+            Button readyButton = levelFinishCanvas.GetComponentInChildren<Button>();
+            if(readyButton)
+            {
+                readyButton.onClick.AddListener(PlayerIsReadyForNextLevel);
+                StartCoroutine(EnableButtonAfterDelay(2.0f, readyButton));
             }
         }
-    }
 
-    IEnumerator EnableButtonAfterDelay(float timeout, Button button)
-    {
-        if(button)
+        void PlayerIsReadyForNextLevel()
         {
-            button.GetComponent<CanvasGroup>().alpha = 0.0f;
-            button.enabled = false;
+            FadeOut(loadSceneObject.GotoNextLevel);
+        }
 
-            yield return new WaitForSecondsRealtime(timeout);
+        void RemoveScreenFadeCanvas()
+        {
+            if(screenFadeCanvas){
+                screenFadeCanvas.gameObject.SetActive(false);
+            }
+        }
 
-            button.enabled = true;
-            EventSystem.current.SetSelectedGameObject(button.gameObject, null); // focus
-            StartCoroutine(FadeEffect.FadeCanvas(button.gameObject, 0.0f, 1.0f, 0.25f));
+        void FadeIn()
+        {
+            if(screenFadeCanvas){
+                screenFadeCanvas.gameObject.SetActive(true);
+                StartCoroutine(FadeEffect.FadeCanvas(screenFadeCanvas.gameObject, 1.0f, 0.0f, 1.0f, RemoveScreenFadeCanvas));
+            }else{
+                RemoveScreenFadeCanvas();
+            }
+        }
+
+        void FadeOut(FadeEffect.FadeFinished Then = null)
+        {
+            if(screenFadeCanvas){
+                screenFadeCanvas.gameObject.SetActive(true);
+                StartCoroutine(FadeEffect.FadeCanvas(screenFadeCanvas.gameObject, 0.0f, 1.0f, 1.0f, Then));
+            }else{
+                if(Then != null){
+                    Then();
+                }
+            }
+        }
+
+        IEnumerator EnableButtonAfterDelay(float timeout, Button button)
+        {
+            if(button)
+            {
+                button.GetComponent<CanvasGroup>().alpha = 0.0f;
+                button.enabled = false;
+
+                yield return new WaitForSecondsRealtime(timeout);
+
+                button.enabled = true;
+                EventSystem.current.SetSelectedGameObject(button.gameObject, null); // focus
+                StartCoroutine(FadeEffect.FadeCanvas(button.gameObject, 0.0f, 1.0f, 0.25f));
+            }
+        }
+
+        IEnumerator WaitForDeathAnimations(){
+            while (animator.GetCurrentAnimatorStateInfo(0).IsTag("NotReadyForTransition"))
+            {
+                yield return null;
+            }
+
+            if(SetConditions.playerLives > 0)
+            {
+                playerHealth.gameObject.transform.position = initialPosition;
+                playerHealth.gameObject.transform.rotation = initialRotation;
+                enemyManager.DestroyAllEnemies();
+
+                playerHealth.ResetHealth();
+
+                playerHealth.GetComponent<PlayerMovement>().enabled = true;
+                playerHealth.GetComponent<PlayerShooting>().enabled = true;
+                loadSceneObject.StartLevelTimer();
+            }else{
+                loadSceneObject.GotoNextLevel();
+            }
         }
     }
 }

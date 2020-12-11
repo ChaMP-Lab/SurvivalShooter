@@ -2,6 +2,8 @@
 using UnityEngine.UI;
 using System.Collections;
 using UnityEngine.SceneManagement;
+using UnityEngine.Events;
+
 
 namespace CompleteProject
 {
@@ -12,9 +14,12 @@ namespace CompleteProject
         public Slider healthSlider;                                 // Reference to the UI's health bar.
         public Image damageImage;                                   // Reference to an image to flash on the screen on being hurt.
         public AudioClip deathClip;                                 // The audio clip to play when the player dies.
+        public AudioClip hurtClip;                                 // The audio clip to play when the player dies.
         public float flashSpeed = 5f;                               // The speed the damageImage will fade at.
         public Color flashColour = new Color(1f, 0f, 0f, 0.1f);     // The colour the damageImage is set to, to flash.
         public GameObject[] heartArray;
+
+        public UnityEvent outOfHealthEvent = new UnityEvent();
 
         Animator anim;                                              // Reference to the Animator component.
         AudioSource playerAudio;                                    // Reference to the AudioSource component.
@@ -32,25 +37,8 @@ namespace CompleteProject
             playerMovement = GetComponent <PlayerMovement> ();
             playerShooting = GetComponentInChildren <PlayerShooting> ();
 
-            // Set the initial health of the player.
-            currentHealth = startingHealth;
-
-            // Set the lives GUI.
-            Debug.Log("StartOfLevel Lives: " + SetConditions.playerLives);
-            switch(SetConditions.playerLives){
-              case 2:
-              //Do stuff
-              heartArray[2].SetActive(false);
-              break;
-
-              case 1:
-              //Do stuff
-              heartArray[2].SetActive(false);
-              heartArray[1].SetActive(false);
-              break;
-            }
+            ResetHealth();
         }
-
 
         void Update ()
         {
@@ -69,8 +57,8 @@ namespace CompleteProject
 
             // Reset the damaged flag.
             damaged = false;
+            anim.SetBool("IsDead", isDead);
         }
-
 
         public void TakeDamage (int amount)
         {
@@ -90,8 +78,6 @@ namespace CompleteProject
             if(currentHealth <= 0 && !isDead)
             {
                 // ... it should die.
-                SetConditions.playerLives -= 1;
-                Debug.Log("AfterDeath Lives: " + SetConditions.playerLives);
                 Death ();
             }
         }
@@ -105,9 +91,6 @@ namespace CompleteProject
             // Turn off any remaining shooting effects.
             playerShooting.DisableEffects ();
 
-            // Tell the animator that the player is dead.
-            anim.SetTrigger ("Die");
-
             // Set the audiosource to play the death clip and play it (this will stop the hurt sound from playing).
             playerAudio.clip = deathClip;
             playerAudio.Play ();
@@ -115,13 +98,24 @@ namespace CompleteProject
             // Turn off the movement and shooting scripts.
             playerMovement.enabled = false;
             playerShooting.enabled = false;
+
+            outOfHealthEvent.Invoke();
         }
 
-
-        public void RestartLevel ()
+        public void ResetHealth()
         {
-            // Load the loading screen.
-            SceneManager.LoadScene (2);
+            isDead = false;
+            playerAudio.clip = hurtClip;
+            currentHealth = startingHealth;
+            UpdateHeartsDisplay();
+            healthSlider.value = currentHealth;
+        }
+
+        void UpdateHeartsDisplay()
+        {
+            for(int i=0; i<heartArray.Length; i++){
+                heartArray[i].SetActive(i < SetConditions.playerLives);
+            }
         }
     }
 }

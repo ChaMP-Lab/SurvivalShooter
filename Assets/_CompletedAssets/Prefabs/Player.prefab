@@ -177,7 +177,6 @@ GameObject:
   - component: {fileID: 19800000}
   - component: {fileID: 8200000}
   - component: {fileID: 12000000}
-  - component: {fileID: 11400000}
   - component: {fileID: 10800000}
   m_Layer: 0
   m_Name: GunBarrelEnd
@@ -5193,22 +5192,6 @@ LineRenderer:
     generateLightingData: 0
   m_UseWorldSpace: 1
   m_Loop: 0
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 100004}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6c83720df9acb89488dbf2c0dbd3ad78, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  damagePerShot: 20
-  timeBetweenBullets: 0.12
-  range: 100
-  faceLight: {fileID: 10800002}
 --- !u!108 &10800000
 Light:
   m_ObjectHideFlags: 0
@@ -5285,6 +5268,7 @@ GameObject:
   - component: {fileID: 11400002}
   - component: {fileID: 13600000}
   - component: {fileID: 8200002}
+  - component: {fileID: 2350245599448075935}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -5346,8 +5330,13 @@ MonoBehaviour:
   healthSlider: {fileID: 0}
   damageImage: {fileID: 0}
   deathClip: {fileID: 8300000, guid: d36a393bca4582043982db9089e1694f, type: 3}
+  hurtClip: {fileID: 8300000, guid: 9922a12f34d0a084aab32de985459723, type: 3}
   flashSpeed: 5
   flashColour: {r: 1, g: 0, b: 0, a: 0.09803922}
+  heartArray: []
+  outOfHealthEvent:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!54 &5400000
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -5376,6 +5365,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b2268f9c7df8764aa2e92dbf55b5ae1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pointingMode: 1
 --- !u!136 &13600000
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -5401,7 +5391,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 24300000, guid: 8434b04884c414ac6b468e10945685e6,
     type: 2}
-  m_audioClip: {fileID: 8300000, guid: 9922a12f34d0a084aab32de985459723, type: 3}
+  m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -5487,6 +5477,22 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &2350245599448075935
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100006}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c83720df9acb89488dbf2c0dbd3ad78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damagePerShot: 20
+  timeBetweenBullets: 0.12
+  range: 100
+  faceLight: {fileID: 10800002}
 --- !u!1 &100008
 GameObject:
   m_ObjectHideFlags: 0
@@ -5685,3 +5691,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0f93687c8ef28249a078a4616fc43d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tactileCuesEnabled: 1
+  visualCuesEnabled: 1
+  auditoryCuesEnabled: 1
+  cueDuration: 0.5
+  tactileCueIntensity: 1
+  playerZoneBarrier: {fileID: 0}
+  visualCueObject: {fileID: 0}
