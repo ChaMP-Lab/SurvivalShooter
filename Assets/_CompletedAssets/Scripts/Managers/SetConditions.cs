@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using System;
+using System.Linq;
+
 using CompleteProject;
 
 public class SetConditions : MonoBehaviour{
@@ -14,7 +16,7 @@ public class SetConditions : MonoBehaviour{
   // Setting Gameplay Variables //
   //-----------------------------//
 
-  public static int SSN;
+  public static int SSN = -1;
   public static string fileName;
   public static int totalLevels = 20; // set to 3 for testing; will be higher for actual...
   public static float currentTime;
@@ -28,18 +30,17 @@ public class SetConditions : MonoBehaviour{
   public static List<string> cueCondition = new List<string>();
   public static string audioCondition;
 
+
+  protected string[][] cueConditionOrders = {
+    new string[] { "none",    "tactile", "both",    "visual"  },
+    new string[] { "tactile", "visual",  "both",    "none"    },
+    new string[] { "visual",  "both",    "tactile", "none"    },
+    new string[] { "both",    "none",    "visual",  "tactile" }
+  };
+
   //-----------------------------//
   // Updating Gameplay Variables //
   //-----------------------------//
-
-  protected void addTutorial(){
-    cueCondition.Insert(0, "both");
-    cueCondition.Insert(0, "visual");
-    cueCondition.Insert(0, "tactile");
-    difficultyArray.Insert(0, 20);
-    difficultyArray.Insert(0, 20);
-    difficultyArray.Insert(0, 20);
-  }
 
   public void setDifficulty(){
     for (int i = 1; i < totalLevels + 1; i++) {
@@ -108,76 +109,39 @@ public class SetConditions : MonoBehaviour{
       System.IO.File.WriteAllText(fileName, "VARIABLES:, SSN, cueCondition, currentTime, totalLevels, TimeInTrial, ETC..." + System.Environment.NewLine);
       System.IO.File.AppendAllText(fileName, "START:," + SSN + "," + cueCondition + "," + currentTime + totalLevels + ", TOT" + ", ETC" + System.Environment.NewLine);
     }
-  // setting cue order (for no audio condition) & starting game...
-    public void setNoAudioCueCondition(){
-      Debug.Log("Setting NoAudio Condition");
-      setSSN ();
+
+    public void OnAudioModeSelected(bool enableAudio){
       // TODO setAudioGameObject.AsActive(false);
-      if (SSN % 4 == 1) {
-        cueCondition.Add("tactile");
-        cueCondition.Add("visual");
-        cueCondition.Add("both");
-        cueCondition.Add("none");
-      }
-      if (SSN % 4 == 2) {
-        cueCondition.Add("visual");
-        cueCondition.Add("both");
-        cueCondition.Add("tactile");
-        cueCondition.Add("none");
-        }
-      if (SSN % 4 == 3) {
-        cueCondition.Add("both");
-        cueCondition.Add("none");
-        cueCondition.Add("visual");
-        cueCondition.Add("tactile");
-      }
-      if (SSN % 4 == 0) {
-        cueCondition.Add("none");
-        cueCondition.Add("tactile");
-        cueCondition.Add("both");
-        cueCondition.Add("visual");
-      }
-      audioCondition = "noAudio";
-      Debug.Log (audioCondition);
+      cueCondition.AddRange(getConditionOrder());
+
+      audioCondition = enableAudio ? "Audio" : "noAudio";
+      Debug.Log("Setting " + audioCondition + "Condition");
       setDifficulty();
       addTutorial();
+
+      string logBuffer = "Trials:";
+      for(int i=0; i<cueCondition.Count; i++){
+        logBuffer += $"\n\tTrial {i} = {cueCondition[i]}, {difficultyArray[i]}";
+      }
+      Debug.Log(logBuffer);
+
       SceneManager.LoadScene (1, LoadSceneMode.Single);
     }
 
-  // setting cue order (for audio condition) & starting game...
-    public void setAudioCueCondition(){
-      Debug.Log("Setting Audio Condition");
-      setSSN ();
-      // TODO setAudioGameObject.AsActive(true);
-      if (SSN % 4 == 1) {
-        cueCondition.Add("tactile");
-        cueCondition.Add("visual");
-        cueCondition.Add("both");
-        cueCondition.Add("none");
-      }
-      if (SSN % 4 == 2) {
-        cueCondition.Add("visual");
-        cueCondition.Add("both");
-        cueCondition.Add("tactile");
-        cueCondition.Add("none");
-        }
-      if (SSN % 4 == 3) {
-        cueCondition.Add("both");
-        cueCondition.Add("none");
-        cueCondition.Add("visual");
-        cueCondition.Add("tactile");
-      }
-      if (SSN % 4 == 0) {
-        cueCondition.Add("none");
-        cueCondition.Add("tactile");
-        cueCondition.Add("both");
-        cueCondition.Add("visual");
-      }
+    protected void addTutorial(){
+      cueCondition.Insert(0, "both");
+      cueCondition.Insert(0, "visual");
+      cueCondition.Insert(0, "tactile");
+      difficultyArray.Insert(0, 20);
+      difficultyArray.Insert(0, 20);
+      difficultyArray.Insert(0, 20);
+    }
 
-      audioCondition = "Audio";
-      Debug.Log (audioCondition);
-      setDifficulty();
-      addTutorial();
-      SceneManager.LoadScene (1, LoadSceneMode.Single);
+    protected string[] getConditionOrder(){
+      if(SSN == -1){
+        setSSN();
+      }
+      int setIndex = SSN % cueConditionOrders.GetLength(0);
+      return cueConditionOrders[setIndex];
     }
 }
