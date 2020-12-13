@@ -129,12 +129,15 @@ public class SetConditions : MonoBehaviour{
     }
 
     protected void addTutorial(){
-      cueCondition.Insert(0, "both");
-      cueCondition.Insert(0, "visual");
-      cueCondition.Insert(0, "tactile");
-      difficultyArray.Insert(0, 20);
-      difficultyArray.Insert(0, 20);
-      difficultyArray.Insert(0, 20);
+      string[] conditionOrder = getConditionOrder();
+      foreach(String condition in Enumerable.Reverse(conditionOrder)){
+        if(condition == "none"){
+          continue;
+        }
+
+        cueCondition.Insert(0, condition);
+        difficultyArray.Insert(0, 20);
+      }
     }
 
     protected string[] getConditionOrder(){
