@@ -28,67 +28,30 @@ public class LoadScene : MonoBehaviour
   }
 
   public void GotoNextLevel(){
-    TimeInLevel = 0;
-    SetConditions.playerLives = 3;
-    SetConditions.level += 1;
-    SceneManager.LoadScene(1);
+    if(SetConditions.PopTrial()){
+      TimeInLevel = 0;
+      SetConditions.playerLives = 3;
+      SceneManager.LoadScene(1);
+    }else{
+      SceneManager.LoadScene(2);
+    }
   }
 
   // Start is called before the first frame update
   void Start()
   {
-    if (SetConditions.level % 5 == 0){
-      SetConditions.cueIndex += 1;
-    }
-
-    if (SetConditions.level == 21){
-      Application.Quit();
-    }
-    Debug.Log(SetConditions.cueCondition[SetConditions.cueIndex]);
-    Debug.Log(SetConditions.audioCondition);
-    SetCues(SetConditions.cueCondition[SetConditions.cueIndex], SetConditions.audioCondition);
-
+    TrialParameters currentTrial = SetConditions.CurrentTrial();
+    SetCues(currentTrial);
     StartLevelTimer();
   }
 
-  public void SetCues (string cueCondition, string audioCondition){
+  public void SetCues(TrialParameters trialParameters) {
+    Debug.Log($"Setting cues: {trialParameters}");
+
     EnemySensor enemySensorComponent = EnemySensor.GetComponent<EnemySensor>();
-
-    switch (cueCondition){
-      case "tactile":
-        enemySensorComponent.tactileCuesEnabled = true;
-        enemySensorComponent.visualCuesEnabled = false;
-        Debug.Log("Setting Cues");
-      break;
-
-      case "visual":
-        enemySensorComponent.tactileCuesEnabled = false;
-        enemySensorComponent.visualCuesEnabled = true;
-        Debug.Log("Setting Cues");
-      break;
-
-      case "both":
-        enemySensorComponent.tactileCuesEnabled = true;
-        enemySensorComponent.visualCuesEnabled = true;
-        Debug.Log("Setting Cues");
-      break;
-
-      case "none":
-        enemySensorComponent.tactileCuesEnabled = false;
-        enemySensorComponent.visualCuesEnabled = false;
-        Debug.Log("Setting Cues");
-      break;
-    }
-
-    switch(audioCondition){
-      case "Audio":
-        enemySensorComponent.auditoryCuesEnabled = true;
-      break;
-
-      case "noAudio":
-        enemySensorComponent.auditoryCuesEnabled = false;
-      break;
-    }
+    enemySensorComponent.tactileCuesEnabled = trialParameters.cue.HasFlag(CueMode.Tactile);
+    enemySensorComponent.visualCuesEnabled = trialParameters.cue.HasFlag(CueMode.Visual);
+    enemySensorComponent.auditoryCuesEnabled = trialParameters.cue.HasFlag(CueMode.Audible);
   }
 
   public float GetTimeRemaining()

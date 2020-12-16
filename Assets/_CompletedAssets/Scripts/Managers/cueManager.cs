@@ -17,6 +17,6 @@ public class cueManager : MonoBehaviour
   void Update ()
   {
       // Set the displayed text to be the word "Score" followed by the score value.
-      text.text = "Enemies will be denoted by " + SetConditions.cueCondition[SetConditions.cueIndex] + " cues.";
+      text.text = "Enemies will be denoted by " + SetConditions.CurrentTrial().cue + " cues.";
   }
 }

@@ -502,6 +502,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SSNtext: {fileID: 2002608057}
+  trialsPerBlock: 1
 --- !u!1 &734491195
 GameObject:
   m_ObjectHideFlags: 0
@@ -1042,6 +1043,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SSNtext: {fileID: 2002608057}
+  trialsPerBlock: 1
 --- !u!114 &1891593762
 MonoBehaviour:
   m_ObjectHideFlags: 0

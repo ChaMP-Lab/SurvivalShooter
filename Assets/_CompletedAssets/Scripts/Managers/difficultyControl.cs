@@ -29,7 +29,7 @@ public class difficultyControl : MonoBehaviour
     }
 
     void SetDifficulty(){
-      enemyStartingHealth = (int) SetConditions.difficultyArray[SetConditions.level];
+      enemyStartingHealth = (int) SetConditions.CurrentTrial().difficulty;
       Debug.Log("New difficulty: " + enemyStartingHealth);
     }
 
