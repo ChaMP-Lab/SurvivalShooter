@@ -9,6 +9,8 @@ namespace CompleteProject
 
     public class LevelTransitionManager : MonoBehaviour
     {
+        public float respawnTime = 30.0f;
+
         public Animator animator;
 
         public Canvas levelStartCanvas;
@@ -21,6 +23,7 @@ namespace CompleteProject
         public EnemyManager enemyManager;
 
         public Text livesLeftText;
+        public Text respawnTimerText;
 
         protected Vector3 initialPosition;
         protected Quaternion initialRotation;
@@ -54,7 +57,7 @@ namespace CompleteProject
             livesLeftText.text = "" + (--SetConditions.playerLives);
 
             loadSceneObject.PauseLevelTimer();
-            StartCoroutine(WaitForDeathAnimations());
+            StartCoroutine(DeathDelay());
         }
 
         void Update()
@@ -144,7 +147,7 @@ namespace CompleteProject
             }
         }
 
-        IEnumerator WaitForDeathAnimations(){
+        IEnumerator DeathDelay(){
             while (animator.GetCurrentAnimatorStateInfo(0).IsTag("NotReadyForTransition"))
             {
                 yield return null;
@@ -152,6 +155,16 @@ namespace CompleteProject
 
             if(SetConditions.playerLives > 0)
             {
+                float now = Time.time;
+                float startTime = now;
+                while(now - startTime < respawnTime)
+                {
+                    respawnTimerText.text = "" + (int)(1 + respawnTime - (now - startTime));
+                    now = Time.time;
+                    yield return null;
+                }
+                respawnTimerText.text = "0";
+
                 playerHealth.gameObject.transform.position = initialPosition;
                 playerHealth.gameObject.transform.rotation = initialRotation;
                 enemyManager.DestroyAllEnemies();
