@@ -68,3 +68,6 @@ crashlytics-build.properties
 
 # Mac folder options
 .DS_Store
+
+# Data folder from testing/running
+data/

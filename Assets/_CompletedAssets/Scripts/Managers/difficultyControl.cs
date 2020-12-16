@@ -34,6 +34,5 @@ public class difficultyControl : MonoBehaviour
     }
 
     void startScreen(){
-      cueText.color = new Color (1, 1, 1, 1);
     }
 }
