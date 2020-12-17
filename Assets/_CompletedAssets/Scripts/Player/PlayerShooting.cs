@@ -23,6 +23,7 @@ namespace CompleteProject
         public Light faceLight;								// Duh
         float effectsDisplayTime = 0.2f;                // The proportion of the timeBetweenBullets that the effects will display for.
 
+        GameObject gunBarrel;
 
         void Awake ()
         {
@@ -32,10 +33,11 @@ namespace CompleteProject
             shootableMask = LayerMask.GetMask("Shootable");
 
             // Set up the references.
-            gunParticles = GetComponent<ParticleSystem> ();
-            gunLine = GetComponent <LineRenderer> ();
-            gunAudio = GetComponent<AudioSource> ();
-            gunLight = GetComponent<Light> ();
+            gunBarrel = gameObject.transform.Find("GunBarrelEnd").gameObject;
+            gunParticles = gunBarrel.GetComponent<ParticleSystem> ();
+            gunLine = gunBarrel.GetComponent<LineRenderer> ();
+            gunAudio = gunBarrel.GetComponent<AudioSource> ();
+            gunLight = gunBarrel.GetComponent<Light> ();
             //faceLight = GetComponentInChildren<Light> ();
         }
 
@@ -102,11 +104,11 @@ namespace CompleteProject
 
             // Enable the line renderer and set it's first position to be the end of the gun.
             gunLine.enabled = true;
-            gunLine.SetPosition (0, transform.position);
+            gunLine.SetPosition (0, gunBarrel.transform.position);
 
             // Set the shootRay so that it starts at the end of the gun and points forward from the barrel.
-            shootRay.origin = transform.position - (transform.forward/2); // extra negative offset prevents shooting through barrier
-            shootRay.direction = transform.forward;
+            shootRay.origin = gunBarrel.transform.position - (gunBarrel.transform.forward/2); // extra negative offset prevents shooting through barrier
+            shootRay.direction = gunBarrel.transform.forward;
 
             // Perform the raycast against gameobjects on the shootable layer and if it hits something...
             if(Physics.Raycast (shootRay, out shootHit, range, shootableMask))
