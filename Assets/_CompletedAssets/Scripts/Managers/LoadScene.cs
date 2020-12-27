@@ -30,7 +30,6 @@ public class LoadScene : MonoBehaviour
   public void GotoNextLevel(){
     if(SetConditions.PopTrial()){
       TimeInLevel = 0;
-      SetConditions.playerLives = 3;
       SceneManager.LoadScene(1);
     }else{
       SceneManager.LoadScene(2);
