@@ -157,9 +157,7 @@ public class SetConditions : MonoBehaviour{
     trialBlocks.Add(tutorial);
     int blockIDX = 0;
     foreach(CueMode cue in conditionOrder){
-      if(cue != CueMode.None){
-        tutorial.trials.Add(new TrialParameters(cue, 20, enableAudio, true));
-      }
+      tutorial.trials.Add(new TrialParameters(cue, 20, enableAudio, true));
 
       TrialBlock block = new TrialBlock($"Block {blockIDX}: {cue}");
       for(int trialIDX=0; trialIDX<trialsPerBlock; trialIDX++){
