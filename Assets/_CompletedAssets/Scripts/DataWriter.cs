@@ -87,6 +87,7 @@ namespace CompleteProject
         protected float levelStartTime = -1;
 
         protected PlayerHealth playerHealthManager;
+        protected LoadScene levelTimeManager;
 
         protected DataWriter(int SSN){
             string path = $"data/{SSN}.csv";
@@ -152,10 +153,14 @@ namespace CompleteProject
                 record.playerHealth = playerHealthManager.currentHealth;
             }
 
+            if(levelTimeManager != null)
+            {
+                record.timeInLevel = levelTimeManager.TimeInLevel;
+            }
+
             // @TODO: Remove circular dependency by decoupling this class from SetConditions
             record.playerLives = SetConditions.playerLives;
 
-            record.timeInLevel = (levelStartTime == -1) ? -1 : (now - levelStartTime);
             record.timeInGame = (gameStartTime == -1) ? -1 : (now - gameStartTime);
 
             writer.WriteLine(record);
@@ -197,6 +202,14 @@ namespace CompleteProject
         public void SetPlayerHealthManager(PlayerHealth manager)
         {
             playerHealthManager = manager;
+        }
+
+        /**
+            Sets the PlayerHealth manager for tracking health
+         **/
+        public void SetLevelTimeManager(LoadScene manager)
+        {
+            levelTimeManager = manager;
         }
     }
 }

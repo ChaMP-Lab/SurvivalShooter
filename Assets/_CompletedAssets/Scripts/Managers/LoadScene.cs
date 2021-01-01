@@ -14,7 +14,7 @@ public class LoadScene : MonoBehaviour
 
   public UnityEvent TimeOverEvent = new UnityEvent();
 
-  protected float TimeInLevel;
+  public float TimeInLevel { get; protected set; }
   protected Coroutine levelTimerRoutine;
 
   IEnumerator LevelTimer(){
@@ -42,6 +42,8 @@ public class LoadScene : MonoBehaviour
     TrialParameters currentTrial = SetConditions.CurrentTrial();
     SetCues(currentTrial);
     StartLevelTimer();
+
+    DataWriter.GetInstance().SetLevelTimeManager(this);
   }
 
   public void SetCues(TrialParameters trialParameters) {
