@@ -14,20 +14,23 @@ namespace CompleteProject
             "    • Avoid damage from the enemy characters by keeping your distance, shooting the enemies, and using the items in the environment as a shield.\n" +
             "\n" +
             "Controls\n" +
-            "    • Shoot =  Ⓐ  Button\n" +
+            "    • Shoot = Right Trigger Button\n" +
             "    • Move = Left Analog Stick\n" +
             "    • Aim = Left Analog Stick\n" +
             "\n" +
             "Your character has 100 points of health. If you lose all of the 100 points of health, you will lose one of your three lives and have to wait through a 30-second loading period. If all three lives are lost, you will be brought to the next level.\n" +
             "\n";
+
         const string tutorialInstructions = "This is a TUTORIAL level, so enemies are at the lowest difficulty. Please ask the administrator if you have any questions\n" +
             "\n" +
             baseInstructions +
             "Please press the  Ⓐ  button to continue";
+
         const string regularInstructions = baseInstructions +
             "There are 20 game levels with random difficulty. In harder levels, the enemies have more health; in easier levels, the enemies have less health.\n" +
             "\n" +
             "Please press the  Ⓐ  button to continue.\n";
+
         public float respawnTime = 30.0f;
 
         public Animator animator;
