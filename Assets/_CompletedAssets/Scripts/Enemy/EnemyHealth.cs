@@ -58,7 +58,7 @@ namespace CompleteProject
 
             // Reduce the current health by the amount of damage sustained.
             currentHealth -= amount;
-            
+
             // Set the position of the particle system to where the hit was sustained.
             hitParticles.transform.position = hitPoint;
 
@@ -66,11 +66,14 @@ namespace CompleteProject
             hitParticles.Play();
 
             // If the current health is less than or equal to zero...
-            if(currentHealth <= 0)
+            bool killed = (currentHealth <= 0);
+            if(killed)
             {
                 // ... the enemy is dead.
                 Death ();
             }
+
+            DataWriter.GetInstance().WriteEnemyDamagedRecord(killed);
         }
 
 

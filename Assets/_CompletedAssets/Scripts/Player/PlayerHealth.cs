@@ -31,6 +31,9 @@ namespace CompleteProject
 
         void Awake ()
         {
+            // @TODO: circular dependency
+            DataWriter.GetInstance().SetPlayerHealthManager(this);
+
             // Setting up the references.
             anim = GetComponent <Animator> ();
             playerAudio = GetComponent <AudioSource> ();
@@ -67,6 +70,9 @@ namespace CompleteProject
 
             // Reduce the current health by the damage amount.
             currentHealth -= amount;
+
+            // Write data
+            DataWriter.GetInstance().WriteRecord(DataTag.EnemyDamage);
 
             // Set the health bar's value to the current health.
             healthSlider.value = currentHealth;

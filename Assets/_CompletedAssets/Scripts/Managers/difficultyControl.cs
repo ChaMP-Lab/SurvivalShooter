@@ -30,6 +30,7 @@ public class difficultyControl : MonoBehaviour
 
     void SetDifficulty(){
       enemyStartingHealth = (int) SetConditions.CurrentTrial().difficulty;
+      enemyAttackDamage = (int) SetConditions.CurrentTrial().enemyAttackDamage;
       Debug.Log("New difficulty: " + enemyStartingHealth);
     }
 

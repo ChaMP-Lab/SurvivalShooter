@@ -54,7 +54,12 @@ namespace CompleteProject
 
         void OnPlayerDied()
         {
-            livesLeftText.text = "" + (--SetConditions.playerLives);
+            SetConditions.playerLives--;
+            if(SetConditions.playerLives <= 0){
+                DataWriter.GetInstance().WriteRecord(DataTag.LevelEnd);
+            }
+
+            livesLeftText.text = "" + (SetConditions.playerLives);
 
             loadSceneObject.PauseLevelTimer();
             StartCoroutine(DeathDelay());
@@ -78,10 +83,13 @@ namespace CompleteProject
             }
             levelStartCanvas.gameObject.SetActive(false);
             Time.timeScale = 1;
+
+            DataWriter.GetInstance().WriteLevelStartRecord(SetConditions.CurrentTrial());
         }
 
         void OnTimeOver()
         {
+            DataWriter.GetInstance().WriteRecord(DataTag.LevelEnd);
             if(pauseManager)
             {
                 pauseManager.enabled = false;
