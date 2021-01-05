@@ -16,7 +16,7 @@ namespace CompleteProject
             "Controls\n" +
             "    • Shoot = Right Trigger Button\n" +
             "    • Move = Left Analog Stick\n" +
-            "    • Aim = Left Analog Stick\n" +
+            "    • Aim = Right Analog Stick\n" +
             "\n" +
             "Your character has 100 points of health. If you lose all of the 100 points of health, you will lose one of your three lives and have to wait through a 30-second loading period. If all three lives are lost, you will be brought to the next level.\n" +
             "\n";
