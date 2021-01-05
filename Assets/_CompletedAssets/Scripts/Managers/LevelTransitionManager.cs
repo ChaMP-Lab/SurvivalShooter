@@ -9,6 +9,28 @@ namespace CompleteProject
 
     public class LevelTransitionManager : MonoBehaviour
     {
+        const string baseInstructions = "Goals\n" +
+            "    • Survive each two-minute level of the game by shooting at enemies\n" +
+            "    • Avoid damage from the enemy characters by keeping your distance, shooting the enemies, and using the items in the environment as a shield.\n" +
+            "\n" +
+            "Controls\n" +
+            "    • Shoot = Right Trigger Button\n" +
+            "    • Move = Left Analog Stick\n" +
+            "    • Aim = Right Analog Stick\n" +
+            "\n" +
+            "Your character has 100 points of health. If you lose all of the 100 points of health, you will lose one of your three lives and have to wait through a 30-second loading period. If all three lives are lost, you will be brought to the next level.\n" +
+            "\n";
+
+        const string tutorialInstructions = "This is a TUTORIAL level, so enemies are at the lowest difficulty. Please ask the administrator if you have any questions\n" +
+            "\n" +
+            baseInstructions +
+            "Please press the  Ⓐ  button to continue";
+
+        const string regularInstructions = baseInstructions +
+            "There are 20 game levels with random difficulty. In harder levels, the enemies have more health; in easier levels, the enemies have less health.\n" +
+            "\n" +
+            "Please press the  Ⓐ  button to continue.\n";
+
         public float respawnTime = 30.0f;
 
         public Animator animator;
@@ -24,6 +46,7 @@ namespace CompleteProject
 
         public Text livesLeftText;
         public Text respawnTimerText;
+        public Text instructionsText;
 
         protected Vector3 initialPosition;
         protected Quaternion initialRotation;
@@ -48,6 +71,15 @@ namespace CompleteProject
             playerHealth.outOfHealthEvent.AddListener(OnPlayerDied);
 
             levelFinishCanvas.gameObject.SetActive(false);
+
+            if(SetConditions.CurrentTrial().isTutorial)
+            {
+                instructionsText.text = tutorialInstructions;
+            }
+            else
+            {
+                instructionsText.text = regularInstructions;
+            }
 
             FadeIn();
         }
