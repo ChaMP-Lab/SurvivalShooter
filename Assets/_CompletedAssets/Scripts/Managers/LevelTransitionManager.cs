@@ -105,6 +105,7 @@ namespace CompleteProject
 
         void PlayerIsReadyToStart()
         {
+            levelStartCanvas.GetComponentInChildren<Button>().enabled = false;
             StartCoroutine(FadeEffect.FadeCanvas(levelStartCanvas.gameObject, 1.0f, 0.0f, 0.125f, BeginPlay));
         }
 
